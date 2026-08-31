@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreeLLM - 免费大模型 API 聚合网关</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a25;--border:#2a2a3a;--text:#e4e4e7;--muted:#8888a0;--primary:#6366f1;--primary-hover:#818cf8;--success:#22c55e;--error:#ef4444}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:0;background:rgba(10,10,15,.9);backdrop-filter:blur(12px);z-index:100}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:24px;font-weight:700;color:var(--primary);text-decoration:none}.logo span{color:var(--text)}
+nav a{color:var(--muted);text-decoration:none;margin-left:24px;font-size:14px}.nav a:hover{color:var(--text)}
+.hero{text-align:center;padding:80px 0 60px;background:linear-gradient(180deg,rgba(99,102,241,.08) 0%,transparent 100%)}
+.hero h1{font-size:48px;font-weight:800;margin-bottom:16px}.hero h1 span{color:var(--primary)}
+.hero p{font-size:18px;color:var(--muted);max-width:600px;margin:0 auto 32px}
+.stats{display:flex;justify-content:center;gap:48px;margin-top:40px}.stats .s{text-align:center}.stats .v{font-size:32px;font-weight:700;color:var(--primary)}.stats .l{font-size:13px;color:var(--muted);margin-top:4px}
+section{padding:60px 0;border-top:1px solid var(--border)}
+h2{font-size:28px;font-weight:700;text-align:center;margin-bottom:12px}
+.desc{text-align:center;color:var(--muted);margin-bottom:40px}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;transition:.2s}
+.pcard:hover{border-color:var(--primary);transform:translateY(-2px)}
+.pcard .n{font-weight:600;margin-bottom:4px}.pcard .m{font-size:12px;color:var(--muted)}
+.badge{display:inline-block;background:rgba(34,197,94,.15);color:var(--success);font-size:11px;padding:2px 8px;border-radius:999px;margin-top:8px}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.fcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px}
+.fcard .i{font-size:32px;margin-bottom:12px}.fcard h3{font-size:18px;margin-bottom:8px}.fcard p{font-size:14px;color:var(--muted)}
+.console{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.cleft,.cright{padding:24px}.cleft{border-right:1px solid var(--border)}
+.ctitle{font-size:16px;font-weight:600;margin-bottom:16px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;margin-top:12px}label:first-of-type{margin-top:0}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;font-family:inherit;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--primary)}
+textarea{resize:vertical;min-height:120px;font-family:'SF Mono',monospace;font-size:13px}
+.btn{display:flex;align-items:center;justify-content:center;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;width:100%;margin-top:16px}
+.btn:hover{background:var(--primary-hover)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.resarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;min-height:320px;font-family:'SF Mono',monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;overflow-y:auto;max-height:420px}
+.resarea.ok{border-color:var(--success)}.resarea.err{border-color:var(--error)}
+.rmeta{display:flex;gap:16px;margin-top:12px;font-size:12px;color:var(--muted)}
+.ctabs{display:flex;gap:4px;margin-bottom:0}
+.ctab{padding:8px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px 8px 0 0;cursor:pointer;font-size:13px;color:var(--muted)}
+.ctab.on{background:var(--surface2);color:var(--text);border-bottom-color:var(--surface2)}
+.cblk{background:var(--surface2);border:1px solid var(--border);border-radius:0 8px 8px 8px;padding:20px;font-family:'SF Mono',monospace;font-size:13px;overflow-x:auto;display:none}
+.cblk.on{display:block}.cblk pre{margin:0;white-space:pre}
+footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;color:var(--muted);font-size:14px}
+footer a{color:var(--primary);text-decoration:none}
+@media(max-width:768px){.hero h1{font-size:32px}.pgrid{grid-template-columns:repeat(2,1fr)}.fgrid{grid-template-columns:1fr}.console{grid-template-columns:1fr}.cleft{border-right:none;border-bottom:1px solid var(--border)}.stats{flex-direction:column;gap:24px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a href="/" class="logo">Free<span>LLM</span></a>
+<nav>
+<a href="#providers">Providers</a>
+<a href="#features">功能</a>
+<a href="#test">在线测试</a>
+<a href="#code">代码示例</a>
+<a href="/admin">管理面板</a>
+</nav>
+</div></header>
+
+<section class="hero"><div class="wrap">
+<h1>免费大模型 <span>API 聚合网关</span></h1>
+<p>将多个免费 LLM 提供商聚合为统一的 OpenAI 兼容接口，智能路由、自动故障转移、开箱即用</p>
+<div class="stats">
+<div class="s"><div class="v">8</div><div class="l">Providers</div></div>
+<div class="s"><div class="v">27+</div><div class="l">免费模型</div></div>
+<div class="s"><div class="v">7</div><div class="l">路由策略</div></div>
+<div class="s"><div class="v">OpenAI</div><div class="l">兼容格式</div></div>
+</div>
+</div></section>
+
+<section id="providers"><div class="wrap">
+<h2>支持的 Provider</h2>
+<p class="desc">一键接入主流免费 LLM 平台</p>
+<div class="pgrid" id="pgrid"></div>
+</div></section>
+
+<section id="features"><div class="wrap">
+<h2>核心功能</h2>
+<p class="desc">为生产环境设计的完整解决方案</p>
+<div class="fgrid">
+<div class="fcard"><div class="i">&#128279;</div><h3>统一 API</h3><p>完全兼容 OpenAI SDK，一个端点访问所有免费模型</p></div>
+<div class="fcard"><div class="i">&#9889;</div><h3>智能路由</h3><p>7 种路由策略自动选择最优 Provider</p></div>
+<div class="fcard"><div class="i">&#128260;</div><h3>自动故障转移</h3><p>请求失败自动切换备用 Provider，最多 3 次重试</p></div>
+<div class="fcard"><div class="i">&#128272;</div><h3>密钥加密</h3><p>AES-256-GCM 加密存储所有 API Key</p></div>
+<div class="fcard"><div class="i">&#128200;</div><h3>实时监控</h3><p>WebSocket 实时推送，完整日志和统计分析</p></div>
+<div class="fcard"><div class="i">&#128737;</div><h3>健康检查</h3><p>定时检测 Provider 状态，自动冷却故障密钥</p></div>
+</div>
+</div></section>
+
+<section id="test"><div class="wrap">
+<h2>在线 API 测试</h2>
+<p class="desc">填写 API Key 后直接测试接口</p>
+<div class="console">
+<div class="cleft">
+<div class="ctitle">请求配置</div>
+<label>API Base URL</label>
+<input type="text" id="in-url" value="http://localhost:3001/v1">
+<label>Proxy API Key</label>
+<input type="text" id="in-key" placeholder="freellm-...">
+<label>模型</label>
+<select id="in-model">
+<option value="groq/qwen/qwen3.8-27b">Groq - Qwen 3.8 27B</option>
+<option value="groq/qwen/qwen3.6-27b">Groq - Qwen 3.6 27B</option>
+<option value="groq/allam-2-7b">Groq - Allam 2 7B</option>
+<option value="groq/openai/gpt-oss-120b">Groq - GPT-OSS 120B</option>
+<option value="groq/openai/gpt-oss-20b">Groq - GPT-OSS 20B</option>
+<option value="google/gemini-2.0-flash">Google - Gemini 2.0 Flash</option>
+<option value="google/gemini-2.5-flash">Google - Gemini 2.5 Flash</option>
+<option value="nvidia/meta/llama-3.3-70b-instruct">NVIDIA - Llama 3.3 70B</option>
+<option value="deepseek/deepseek-v4-flash">DeepSeek - V4 Flash</option>
+<option value="deepseek/deepseek-v4-pro">DeepSeek - V4 Pro</option>
+<option value="openrouter/meta-llama/llama-3.3-70b-instruct:free">OpenRouter - Llama 3.3 70B</option>
+<option value="cerebras/llama-3.3-70b">Cerebras - Llama 3.3 70B</option>
+<option value="sambanova/Meta-Llama-3.3-70B-Instruct">SambaNova - Llama 3.3 70B</option>
+</select>
+<label>路由策略</label>
+<select id="in-strategy">
+<option value="">默认 (priority)</option>
+<option value="priority">priority</option>
+<option value="balanced">balanced</option>
+<option value="fastest">fastest</option>
+<option value="smartest">smartest</option>
+<option value="random">random</option>
+<option value="round-robin">round-robin</option>
+</select>
+<label>消息内容</label>
+<textarea id="in-msg">用一句话介绍你自己</textarea>
+<label>最大 Token</label>
+<input type="number" id="in-tokens" value="200" min="1" max="4096">
+<button class="btn" id="sendBtn">发送请求</button>
+</div>
+<div class="cright">
+<div class="ctitle">响应结果</div>
+<div class="resarea" id="outArea"><span style="color:var(--muted)">点击「发送请求」查看结果...</span></div>
+<div class="rmeta" id="outMeta" style="display:none">
+<span id="mLatency"></span>
+<span id="mProvider"></span>
+<span id="mTokens"></span>
+</div>
+</div>
+</div>
+</div></section>
+
+<section id="code"><div class="wrap">
+<h2>快速集成</h2>
+<p class="desc">几行代码即可接入</p>
+<div class="ctabs">
+<div class="ctab on" data-tab="py">Python</div>
+<div class="ctab" data-tab="cu">cURL</div>
+<div class="ctab" data-tab="js">Node.js</div>
+</div>
+<div class="cblk on" id="t-py"><pre><span style="color:#6b7280"># pip install openai</span>
+<span style="color:#ff7b72">from</span> openai <span style="color:#ff7b72">import</span> OpenAI
+
+client = OpenAI(
+    base_url:<span style="color:#a5d6ff">"http://localhost:3001/v1"</span>,
+    api_key:<span style="color:#a5d6ff">"freellm-your-proxy-key"</span>
+)
+
+response = client.chat.completions.create(
+    model:<span style="color:#a5d6ff">"groq/llama-3.3-70b-versatile"</span>,
+    messages:[{<span style="color:#a5d6ff">"role"</span>:<span style="color:#a5d6ff">"user"</span>,<span style="color:#a5d6ff">"content"</span>:<span style="color:#a5d6ff">"Hello!"</span>}]
+)
+
+print(response.choices[0].message.content)</pre></div>
+<div class="cblk" id="t-cu"><pre>curl http://localhost:3001/v1/chat/completions \
+  -H <span style="color:#a5d6ff">"Content-Type: application/json"</span> \
+  -H <span style="color:#a5d6ff">"Authorization: Bearer freellm-your-proxy-key"</span> \
+  -d <span style="color:#a5d6ff">'{
+    "model": "groq/llama-3.3-70b-versatile",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'</span></pre></div>
+<div class="cblk" id="t-js"><pre><span style="color:#ff7b72">const</span> res = <span style="color:#ff7b72">await</span> fetch(<span style="color:#a5d6ff">'http://localhost:3001/v1/chat/completions'</span>, {
+  method: <span style="color:#a5d6ff">'POST'</span>,
+  headers: {
+    <span style="color:#a5d6ff">'Content-Type'</span>: <span style="color:#a5d6ff">'application/json'</span>,
+    <span style="color:#a5d6ff">'Authorization'</span>: <span style="color:#a5d6ff">'Bearer freellm-your-proxy-key'</span>
+  },
+  body: JSON.stringify({
+    model: <span style="color:#a5d6ff">'groq/llama-3.3-70b-versatile'</span>,
+    messages: [{ role: <span style="color:#a5d6ff">'user'</span>, content: <span style="color:#a5d6ff">'Hello!'</span> }]
+  })
+});
+<span style="color:#ff7b72">const</span> data = <span style="color:#ff7b72">await</span> res.json();
+console.log(data.choices[0].message.content);</pre></div>
+</div></section>
+
+<footer><div class="wrap">
+<p>FreeLLM - 免费大模型 API 聚合网关 | <a href="/admin">管理面板</a></p>
+</div></footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

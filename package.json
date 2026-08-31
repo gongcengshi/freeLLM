@@ -1,0 +1,62 @@
+{
+  "name": "freellm",
+  "version": "0.1.0",
+  "description": "Free LLM API Gateway - Aggregate free tiers from multiple providers into one OpenAI-compatible endpoint",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "freellm": "dist/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "db:migrate": "tsx src/db/migrate.ts"
+  },
+  "dependencies": {
+    "@types/compression": "^1.8.1",
+    "@types/ws": "^8.18.1",
+    "better-sqlite3": "^11.0.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^8.0.0",
+    "pino": "^9.0.0",
+    "pino-pretty": "^11.0.0",
+    "undici": "^8.10.0",
+    "uuid": "^10.0.0",
+    "ws": "^8.21.3",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/cors": "^2.8.0",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^9.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "llm",
+    "api",
+    "gateway",
+    "free",
+    "openai",
+    "proxy",
+    "router"
+  ],
+  "license": "MIT"
+}
