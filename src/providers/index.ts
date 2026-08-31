@@ -42,7 +42,7 @@ export class NvidiaNIMAdapter extends OpenAICompatibleAdapter {
   constructor() {
     super('nvidia', 'NVIDIA NIM');
     this.initialize({
-      baseUrl: 'https://integrate.api.nvidia.com/v1',
+      baseUrl: 'https://integrate.api.nvidia.com',
       models: [
         'nvidia/nemotron-3-super-120b-a12b',
         'meta/llama-3.3-70b-instruct',
@@ -57,7 +57,7 @@ export class OpenRouterAdapter extends OpenAICompatibleAdapter {
   constructor() {
     super('openrouter', 'OpenRouter');
     this.initialize({
-      baseUrl: 'https://openrouter.ai/api/v1',
+      baseUrl: 'https://openrouter.ai/api',
       models: [
         'meta-llama/llama-3.3-70b-instruct:free',
         'google/gemini-2.0-flash-exp:free',
@@ -79,7 +79,7 @@ export class DeepSeekAdapter extends OpenAICompatibleAdapter {
   constructor() {
     super('deepseek', 'DeepSeek');
     this.initialize({
-      baseUrl: 'https://api.deepseek.com/v1',
+      baseUrl: 'https://api.deepseek.com',
       models: [
         'deepseek-v4-pro',
         'deepseek-v4-flash',
@@ -93,7 +93,7 @@ export class CerebrasAdapter extends OpenAICompatibleAdapter {
   constructor() {
     super('cerebras', 'Cerebras');
     this.initialize({
-      baseUrl: 'https://api.cerebras.ai/v1',
+      baseUrl: 'https://api.cerebras.ai',
       models: [
         'llama-3.3-70b',
         'llama-3.1-8b',
@@ -107,7 +107,7 @@ export class SambaNovaAdapter extends OpenAICompatibleAdapter {
   constructor() {
     super('sambanova', 'SambaNova');
     this.initialize({
-      baseUrl: 'https://api.sambanova.ai/v1',
+      baseUrl: 'https://api.sambanova.ai',
       models: [
         'Meta-Llama-3.3-70B-Instruct',
         'DeepSeek-V3-0324',
@@ -121,7 +121,7 @@ export class HuggingFaceAdapter extends OpenAICompatibleAdapter {
   constructor() {
     super('huggingface', 'HuggingFace');
     this.initialize({
-      baseUrl: 'https://api-inference.huggingface.co/v1',
+      baseUrl: 'https://api-inference.huggingface.co',
       models: [
         'meta-llama/Llama-3.3-70B-Instruct',
         'Qwen/Qwen2.5-72B-Instruct',
